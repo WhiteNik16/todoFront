@@ -4,6 +4,7 @@ import registration from "@/components/registration";
 import login from "@/components/login";
 import boards from "@/views/Boards";
 import listBoards from "@/views/listBoards";
+import addBoards from "@/views/addBoards";
 
 
 const routes = [
@@ -22,6 +23,11 @@ const routes = [
     name: 'Boards',
     component: boards,
     props: true,
+  },
+  {
+    path: '/addBoards',
+    name: 'addBoard',
+    component: addBoards
   },
   {
     path: '/register',

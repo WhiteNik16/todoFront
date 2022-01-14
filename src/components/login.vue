@@ -1,7 +1,9 @@
 <template>
   <div>
-    <input type="text" v-model="user.username"><br/>
-    <input type="password" v-model="user.password"><br/>
+    <label for="login">Username: </label>
+    <input type="text" id="login" placeholder="Username" v-model="user.username"><br/>
+    <label for="password">Password: </label>
+    <input type="password" id="password" placeholder="password" v-model="user.password"><br/>
     <button @click="login">Login</button>
   </div>
 </template>

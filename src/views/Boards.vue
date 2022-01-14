@@ -13,10 +13,10 @@
         <option v-for="user in users" :key="user._id" :value="user._id">{{ user.username }}</option>
       </select>
       <button v-if="isVisiableSelect" @click="addAccess(board._id)">Выбрать</button>
-      <div class="board_columns" v-for="column in board.columns"
-           @drop="onDrop($event, index, column)"
-           @dragover.prevent
-           @dragenter.prevent><h6>{{ column }}</h6>
+      <div class="board_columns"><div class="board_column" v-for="column in board.columns"
+                @drop="onDrop($event, column)"
+                @dragover.prevent
+                @dragenter.prevent><h6>{{ column }}</h6>
         <div v-for="item in board.todosList.filter(x => x.column == column)"
              @dragstart="onDragStart($event, item, board._id,)"
              class="board_draggable "
@@ -37,7 +37,8 @@
 
           <br/>
           <button @click="deleteTodos({todoId:item._id, boardId:board._id})">Delete</button>
-        </div>
+        </div></div>
+
       </div>
       <input type="text" v-model="newTodos">
       <div class="board_todo-add" v-for="item in board.columns" v-if="newTodos">
@@ -108,27 +109,31 @@ export default {
       }
     },
     onDragStart(e, item, boardId) {
+      console.log('onDrafg')
       e.dataTransfer.dropEffect = 'move'
       e.dataTransfer.effectAllowed = 'move'
       e.dataTransfer.setData('item', item._id)
       e.dataTransfer.setData('boardId', boardId)
     },
-    async onDrop(e, parentBoardId, column) {
+    async onDrop(e,  column) {
+
       const IdItem = e.dataTransfer.getData('item')
       const boardId = e.dataTransfer.getData('boardId')
+
       let boardInd = this.boards.findIndex(ind => ind._id == boardId)
       let itemInd = this.boards[boardInd].todosList.findIndex(i => i._id == IdItem)
 
       await api.post('/todo/deleteTodo', {todoId: IdItem, boardId: boardId})
       let addResponse = await api.post('/todo/addTodo', {
-        id: this.boards[parentBoardId]._id.toString(),
+        id: this.boards[boardInd]._id.toString(),
         todo: this.boards[boardInd].todosList[itemInd].todo,
         columns: column
       })
+
       this.boards[boardInd].todosList[itemInd].column = column
       this.boards[boardInd].todosList[itemInd]._id = addResponse.data
-      this.boards[parentBoardId].todosList.push(this.boards[boardInd].todosList[itemInd])
-      this.boards[boardInd].todosList.splice(itemInd, 1)
+
+
 
 
     }
@@ -157,7 +162,7 @@ label {
 
 .board_droppable {
   padding: 15px;
-  max-width: 700px;
+  max-width: 70%;
   border-radius: 5px;
   background: #2c3e50;
   margin-left: auto;
@@ -165,8 +170,10 @@ label {
   margin-bottom: 10px;
 }
 
-.droppable h4 {
+h4 {
   color: white;
+  font-size: 26px;
+
 }
 
 .board_draggable {
@@ -182,8 +189,16 @@ label {
 .draggable h5 {
   margin: 0;
 }
-
-.board_columns {
+.board_columns{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+.board_column {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 30%;
+  margin-left: 15px;
   background: #517a9d;
   min-height: 50px;
 }
